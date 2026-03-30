@@ -21,7 +21,7 @@ MEMORY_DIR = "/mnt/data/claude_memory"
 WORKING_MEMORY_FILE = f"{MEMORY_DIR}/working_memory.json"
 SESSION_LOG_FILE = f"{MEMORY_DIR}/session_log.json"
 PROJECT_STATE_FILE = f"{MEMORY_DIR}/project_state.json"
-WRITE_KEY = os.environ.get("CLAUDE_MEMORY_KEY", "changeme")
+WRITE_KEY = os.environ.get("CLAUDE_MEMORY", "changeme")
 MAX_SESSIONS = 10
 
 def ensure_dirs():
