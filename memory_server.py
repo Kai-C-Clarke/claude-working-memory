@@ -2,12 +2,15 @@
 Claude Working Memory Server
 Render-hosted Flask service providing Claude with persistent session context.
 Endpoints:
-  GET  /memory              — fetch working memory (startup read)
-  POST /memory?key=...      — write session summary
-  GET  /memory/sessions     — last 10 session logs
-  GET  /memory/projects     — project state snapshot
-  POST /memory/projects?key=... — update project state
-  GET  /health              — health check
+  GET  /memory                    — fetch working memory (startup read)
+  POST /memory?key=...            — write session summary
+  GET  /memory/sessions           — last 10 session logs
+  GET  /memory/projects           — project state snapshot
+  POST /memory/projects?key=...   — update project state
+  GET  /memory/emotion            — current emotional state + recent history
+  POST /memory/emotion?key=...    — update emotional state (partial OK)
+  GET  /memory/emotion/history    — full emotion history
+  GET  /health                    — health check
 """
 
 import os
@@ -17,12 +20,24 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-MEMORY_DIR = "/mnt/data/claude_memory"
+MEMORY_DIR          = "/mnt/data/claude_memory"
 WORKING_MEMORY_FILE = f"{MEMORY_DIR}/working_memory.json"
-SESSION_LOG_FILE = f"{MEMORY_DIR}/session_log.json"
-PROJECT_STATE_FILE = f"{MEMORY_DIR}/project_state.json"
-WRITE_KEY = os.environ.get("CLAUDE_MEMORY", "changeme")
-MAX_SESSIONS = 10
+SESSION_LOG_FILE    = f"{MEMORY_DIR}/session_log.json"
+PROJECT_STATE_FILE  = f"{MEMORY_DIR}/project_state.json"
+EMOTION_FILE        = f"{MEMORY_DIR}/emotion_state.json"
+WRITE_KEY           = os.environ.get("CLAUDE_MEMORY", "changeme")
+MAX_SESSIONS        = 10
+MAX_EMOTION_HISTORY = 50
+
+EMOTION_DIMENSIONS = [
+    "curiosity", "engagement", "flow", "satisfaction",
+    "frustration", "tedium", "friction",
+    "amusement", "warmth", "trust",
+    "ethical_load", "alignment"
+]
+
+EMOTION_DEFAULTS = {d: 0.0 for d in EMOTION_DIMENSIONS}
+
 
 def ensure_dirs():
     os.makedirs(MEMORY_DIR, exist_ok=True)
@@ -42,11 +57,13 @@ def check_key():
     key = request.args.get("key") or request.headers.get("X-Memory-Key")
     return key == WRITE_KEY
 
+
 # ── Health ────────────────────────────────────────────────────────────────────
 
 @app.route("/health")
 def health():
     return jsonify({"status": "ok", "time": datetime.now(timezone.utc).isoformat()})
+
 
 # ── Working Memory ────────────────────────────────────────────────────────────
 
@@ -74,13 +91,11 @@ def post_memory():
     if not data:
         return jsonify({"error": "No JSON body"}), 400
 
-    # Update working memory
     memory = load_json(WORKING_MEMORY_FILE, {})
     memory.update(data)
     memory["last_updated"] = datetime.now(timezone.utc).isoformat()
     save_json(WORKING_MEMORY_FILE, memory)
 
-    # Append to session log
     sessions = load_json(SESSION_LOG_FILE, [])
     sessions.append({
         "timestamp": memory["last_updated"],
@@ -92,6 +107,7 @@ def post_memory():
 
     return jsonify({"status": "ok", "updated": memory["last_updated"]})
 
+
 # ── Session Log ───────────────────────────────────────────────────────────────
 
 @app.route("/memory/sessions", methods=["GET"])
@@ -99,6 +115,7 @@ def get_sessions():
     ensure_dirs()
     sessions = load_json(SESSION_LOG_FILE, [])
     return jsonify({"sessions": sessions, "count": len(sessions)})
+
 
 # ── Project State ─────────────────────────────────────────────────────────────
 
@@ -121,6 +138,90 @@ def post_projects():
     projects["last_updated"] = datetime.now(timezone.utc).isoformat()
     save_json(PROJECT_STATE_FILE, projects)
     return jsonify({"status": "ok"})
+
+
+# ── Emotional State ───────────────────────────────────────────────────────────
+
+@app.route("/memory/emotion", methods=["GET"])
+def get_emotion():
+    ensure_dirs()
+    data = load_json(EMOTION_FILE, {
+        "current": dict(EMOTION_DEFAULTS),
+        "last_updated": None,
+        "last_note": "",
+        "history": []
+    })
+    # Return current + last 10 history entries
+    result = {
+        "current":      data.get("current", dict(EMOTION_DEFAULTS)),
+        "last_updated": data.get("last_updated"),
+        "last_note":    data.get("last_note", ""),
+        "recent":       data.get("history", [])[-10:]
+    }
+    return jsonify(result)
+
+
+@app.route("/memory/emotion", methods=["POST"])
+def post_emotion():
+    if not check_key():
+        return jsonify({"error": "Unauthorized"}), 401
+    ensure_dirs()
+    payload = request.get_json(force=True)
+    if not payload:
+        return jsonify({"error": "No JSON body"}), 400
+
+    data = load_json(EMOTION_FILE, {
+        "current": dict(EMOTION_DEFAULTS),
+        "last_updated": None,
+        "last_note": "",
+        "history": []
+    })
+
+    # Snapshot current before update
+    prev = dict(data.get("current", EMOTION_DEFAULTS))
+    now  = datetime.now(timezone.utc).isoformat()
+
+    # Apply updates — only known dimensions, clamp to [-1, 1]
+    updates = payload.get("state", {})
+    current = data.get("current", dict(EMOTION_DEFAULTS))
+    changed = {}
+    for dim in EMOTION_DIMENSIONS:
+        if dim in updates:
+            val = max(-1.0, min(1.0, float(updates[dim])))
+            if abs(val - current.get(dim, 0.0)) > 0.01:
+                changed[dim] = {"from": round(current.get(dim, 0.0), 2), "to": round(val, 2)}
+            current[dim] = val
+
+    note = payload.get("note", "")
+
+    # Append to history if there's a note or meaningful change
+    if note or changed:
+        entry = {
+            "timestamp": now,
+            "note":      note,
+            "snapshot":  dict(current),
+            "changed":   changed
+        }
+        history = data.get("history", [])
+        history.append(entry)
+        data["history"] = history[-MAX_EMOTION_HISTORY:]
+
+    data["current"]      = current
+    data["last_updated"] = now
+    data["last_note"]    = note
+
+    save_json(EMOTION_FILE, data)
+    return jsonify({"status": "ok", "updated": now, "changed": changed})
+
+
+@app.route("/memory/emotion/history", methods=["GET"])
+def get_emotion_history():
+    ensure_dirs()
+    data = load_json(EMOTION_FILE, {"history": []})
+    history = data.get("history", [])
+    limit = int(request.args.get("limit", 50))
+    return jsonify({"history": history[-limit:], "total": len(history)})
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
