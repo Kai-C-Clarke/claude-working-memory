@@ -1,26 +1,27 @@
 # Claude Working Memory
 
-Lightweight Flask service providing Claude with persistent session context across conversations.
+Session memory server for Jon Stiles AI experiments.
 
-## Endpoints
+## For a new Claude session
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/memory` | Fetch working memory + last 3 sessions (startup read) |
-| POST | `/memory?key=...` | Write session summary |
-| GET | `/memory/sessions` | Last 10 session logs |
-| GET | `/memory/projects` | Project state snapshot |
-| POST | `/memory/projects?key=...` | Update project state |
-| GET | `/health` | Health check |
+At the start of every session, run these two commands before doing anything else:
 
-## Deploy
+```bash
+curl https://claude-working-memory.onrender.com/memory
+curl https://raw.githubusercontent.com/Kai-C-Clarke/claude-working-memory/main/BRIEFING.md
+```
 
-1. Create Render web service pointing to this repo
-2. Set env var `CLAUDE_MEMORY_KEY` to a secret value
-3. Attach a 1GB persistent disk at `/mnt/data`
+Read both. The memory gives you current state. The BRIEFING gives you full project context.
+Then check service health:
 
-## Purpose
+```bash
+curl https://the-ancestor.onrender.com/field/health
+curl https://claude-composer.onrender.com/health
+```
 
-Keeps Claude's session context lean and fast — a single GET at startup 
-returns everything needed to continue work without wading through 
-Consilium's 750+ mind cycle entries.
+That's it. You're oriented.
+
+## API
+- GET /memory — current session context
+- POST /memory?key=MEMORY_KEY — update context
+- GET /memory/emotion — emotional state log
