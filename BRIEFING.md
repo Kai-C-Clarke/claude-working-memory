@@ -75,7 +75,7 @@ Communication style: direct, no fluff. ("NTIGAS")
 
 ### 7. CLAUDE WORKING MEMORY
 - **URL:** claude-working-memory.onrender.com
-- **Key:** CLAUDE_MEMORY
+- **Key:** [MEMORY_KEY — Render env var]
 - **Endpoints:** GET/POST /memory, /memory/emotion, /memory/emotion/history
 - **Use:** Fetch at session start (use bash_tool curl, not web_fetch). POST summary at session end.
 
@@ -105,16 +105,16 @@ Communication style: direct, no fluff. ("NTIGAS")
 
 ## API KEYS AND CREDENTIALS
 
-- **DeepSeek:** [DEEPSEEK_KEY — in Render env vars]
+- **DeepSeek:** [DEEPSEEK_KEY]
 - **Claude model (Consilium):** claude-sonnet-4-6 (updated 15 Apr 2026, deprecation notice received)
-- **Anthropic:** [ANTHROPIC_KEY — in Render env vars]
-- **OpenAI:** [OPENAI_KEY — in Render env vars]
-- **ElevenLabs:** [ELEVENLABS_KEY — in Render env vars]
+- **Anthropic:** [ANTHROPIC_KEY]
+- **OpenAI:** [OPENAI_KEY]
+- **ElevenLabs:** [ELEVENLABS_KEY]
 - **Grok/xAI:** (in Render env vars on consilium-d1fw)
 - **GitHub PAT (Kai-C-Clarke):** [GITHUB_PAT — Jon has this] (expires Jun 2026)
-- **Consilium API key:** 3a51b60e9b78720f8528412db52e7ef3
+- **Consilium API key:** [CONSILIUM_KEY — Render env var]
 - **Ancestor/Substrate/Triad key:** ancestor-2026
-- **Memory write key:** CLAUDE_MEMORY
+- **Memory write key:** [MEMORY_KEY — Render env var]
 
 ---
 
