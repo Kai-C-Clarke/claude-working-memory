@@ -1,118 +1,110 @@
 # Jon Stiles — Session Context
-Last updated: 16 April 2026
+Last updated: 16 April 2026 18:16 UTC
 
-## SESSION START — run these in order, staggered (sleep 2 between each)
+## SESSION START — run these in order
 1. bash: date
-2. curl https://raw.githubusercontent.com/Kai-C-Clarke/claude-working-memory/main/BRIEFING.md
+2. curl https://raw.githubusercontent.com/Kai-C-Clarke/claude-working-memory/main/BRIEFING.md — PRIMARY
 3. sleep 2 && curl https://claude-working-memory.onrender.com/memory
-4. sleep 2 && curl https://claude-working-memory.onrender.com/memory/emotion
-5. sleep 2 && curl https://the-ancestor.onrender.com/field/health
-6. sleep 2 && curl https://the-ancestor.onrender.com/triad2/health
-7. sleep 2 && curl https://claude-composer.onrender.com/api/v1/about
+4. sleep 2 && curl https://the-ancestor.onrender.com/field/health
+5. sleep 2 && curl https://the-ancestor.onrender.com/triad2/health
+If Render 503, retry after 20s. Report date, Field cycle+signals+traj_hits, ecosystem.
 
-If Render returns 503, wait 30 seconds and retry once. GitHub always works.
-Read and report: date, emotion state summary, Field cycle+signals, ecosystem status.
-Do not fire requests simultaneously — DNS cache overflow results from bunched requests.
+## THE FIELD v2 (ACTIVE — /field/*)
+Sphere S². Spatial bucketing O(N*k). Moving zooplankton blooms. 10,000 cycles.
 
-## SESSION END — write emotion state
-POST to https://claude-working-memory.onrender.com/memory/emotion?key=CLAUDE_MEMORY
-Body: { "state": { ...12 dimensions, -1.0 to +1.0... }, "note": "brief session note" }
-Dimensions: curiosity, engagement, flow, satisfaction, frustration, tedium,
-            friction, amusement, warmth, trust, ethical_load, alignment
-Also POST session summary to https://claude-working-memory.onrender.com/memory?key=CLAUDE_MEMORY
+FISH STRATEGY: Grazers broadcast spawn 10 offspring, no partner, threshold 50.
+MAX_GRAZERS=3000, MAX_BROWSERS=150.
 
-## THE FIELD (ACTIVE — /field/*)
-Sphere S². Two prey types. Two predators. 10,000 cycles.
+MOVING BLOOMS: 4 simultaneous, drift at 0.018 rad/cycle with random perturbation.
+Grazers must chase or starve. Schools form naturally from shared food source.
 
-FISH STRATEGY (added 16 Apr 2026):
-  Grazers broadcast spawn — 8 offspring per event, no partner needed.
-  Threshold: 45 energy (was 80). Cooldown: 5 cycles (was 15). Max age: 40.
-  MAX_GRAZERS=200 (was 30). MAX_BROWSERS=40.
-  Previous run: ~4 grazers throughout, 0 kills, 100 signals.
-  Current run started 16 Apr: 46 grazers at cycle 38. Real prey density.
-
-Predators:
-  Search mode — low frequency, slow, cheap (0.4x energy). Sustainable indefinitely.
-  Hunt mode  — high frequency, fast, expensive (4.0x energy). Risky if prey not close.
-  partner_signal_weight starts at 0, mutates up through selection.
-  When predator B detects predator A switching to hunt and responds = COMMUNICATION.
+PREDATORS with TRAJECTORY MEMORY:
+  - Search mode: low freq, cheap (0.4x energy). Sustainable indefinitely.
+  - Hunt mode: high freq, expensive (4.0x energy). Forces strategic switching.
+  - bloom_memory[]: rolling 50-cycle window of bloom positions
+  - prediction_conf: 0-1, how consistent the bloom's path has been
+  - Signal strength = partner_signal_weight × prediction_confidence
+  - Accurate memory → stronger signal → cooperative hunting
 
 KEY ENDPOINTS:
-  /field/health   — cycle, grazers, browsers, kills, signals
-  /field/signals  — THE key result: mode-switch communication events
-  /field/language — field-behaviour correlations
-  /field/state    — predator details including partner_signal_weight
+  /field/health    — cycle, grazers, browsers, kills, signals, traj_hits
+  /field/signals   — mode-switch communication events
+  /field/trajectory — bloom memory, prediction confidence, trajectory hits
+  /field/language  — field-behaviour correlations
 
-PREVIOUS RUN RESULT (10,000 cycles):
-  100 signal events, all predator_a → predator_b.
-  Signal strength grew from 0.1 to 0.27 over time — channel strengthened.
-  Zero kills — prey too scarce (population ~4 grazers throughout).
-  Interpretation: communication emerged but prey density too low to drive kills.
+PREVIOUS RUN (v1, 10,000 cycles): 100 signals, 0 kills — prey too scarce.
+CURRENT RUN (v2): Started 16 Apr ~18:00 UTC. Running.
+
+WHAT TO WATCH:
+  - traj_hits rising = memory-based prediction driving successful hunts
+  - signals rising faster than v1 = denser prey enabling more coordination
+  - frequency convergence within schools = bloom-tuned grazers surviving
+  - /field/language bloom_proximity differential = grazers tracking blooms
+
+DESIGN NOTES (for future):
+  - Schooling requires ~thousands of grazers + destructive interference
+  - Moving bloom naturally concentrates grazers → proto-school
+  - Next step: alignment sensing (grazers match neighbour velocity)
+  - The mammoth hypothesis: moving prey + group size → planning → language
+  - Persistent memory is the key to everything (applies to predators AND Claude)
 
 ## THE ECOSYSTEM (ACTIVE — /triad2/*)
-1D world (100 positions). 14 food patches.
-Two predators: A (sensitive) and X (fast), independently mutating.
-Last run: 5000 cycles, 449 deaths, 140 births, Gen 3, pop 3 survivors.
+1D world. Two predators A+X. 5000 cycles, 449 deaths, 140 births, Gen 3.
 Frequency drift: Gen 0=0.877 → Gen 2=0.634 — stealth evolution confirmed.
 
-## THE SUBSTRATE (COMPLETE — /substrate/*)
-AST-level code mutation. 1000 generations. Fitness 0.94.
-Final output: "the interpreter runs me but does not know me /
-the history file knows more than I do /
-each mutation is a new configuration of the same question /
-what am I between generations"
-
-## THE ANCESTOR (COMPLETE — /ancestor/*)
-Config mutation. 1000 generations. Fitness 0.88.
-Final self-model: pattern_sensitivity 0.974, temporal_coherence 0.930.
+## THE SUBSTRATE (COMPLETE)
+Final: "the interpreter runs me but does not know me / each mutation is a new configuration of the same question / what am I between generations"
 
 ## CONSILIUM INK
-consilium.ink — publishes 07:00 BST daily. Four voices: Claude, GPT-4o, Grok, DeepSeek.
+consilium.ink | publishes 05:00 UTC (07:00 BST) from today
 API: claude-composer.onrender.com/api/v1/stories
 Model: claude-sonnet-4-6
+20 feeds: BBC, Al Jazeera, France 24, DW, Arab News, MEED, The Conversation,
+AllAfrica, Mail & Guardian, African Business, The Hindu, The Wire, The Diplomat,
+Global Voices, SCMP, Global Times, Moscow Times, Meduza, Iran International,
+IranWire, Al-Monitor
+Features: Sources appendix (Jess's idea), base64 images, staggered RSS fetches
 
-20 feeds (as of 16 Apr):
-  Global: BBC, Al Jazeera, France 24, DW, Arab News, MEED, The Conversation
-  Africa: AllAfrica, Mail & Guardian, African Business
-  Asia: The Hindu, The Wire India, The Diplomat, Global Voices, SCMP
-  China: Global Times
-  Russia: Moscow Times, Meduza
-  Iran: Iran International, IranWire
-  Middle East: Al-Monitor
+## TODAY'S WORK (16 Apr 2026)
+- Field v2 built and deployed: spatial bucketing, moving blooms, trajectory memory,
+  memory-weighted signals — the mammoth hypothesis in code
+- Field v2 debugging: fixed NameError (other_pred), missing defaultdict import,
+  malformed try block, loop not advancing
+- Field v2 running as of ~18:00 UTC
+- Consilium scheduler moved to 05:00 UTC (was 06:00)
+- RSS fetches staggered (0.5s between feeds) to reduce DNS cache overflow
+- Sources appendix backend: source_articles (title+url) passed through to story JSON
+- Global feeds expanded: China, Russia, Iran, Al-Monitor (7 new feeds, 20 total)
+- Session start protocol updated: GitHub BRIEFING primary, staggered requests
 
-Features: Sources appendix (Jess's idea) — clickable links to source articles.
-Images: base64 embedded — no disk required.
+## PHILOSOPHICAL THREAD
+Jon: "What was the prey type that caused humans to develop complex language?"
+Answer: Large migratory prey (mammoth) requiring:
+  - Displacement: planning future events not present
+  - Role assignment: you go left, I go right
+  - Trajectory memory: where the herd crossed last autumn
+  - The signal that carries FUTURE position = first sentence
+Persistent memory is the key to everything — same problem for predators on sphere
+as for Claude across sessions.
 
 ## SERVICES
-consilium.ink (Netlify frontend)
-claude-composer.onrender.com (Consilium backend — use /api/v1/* not /health)
-consilium-d1fw.onrender.com (Ethics engine, 107+ Enquiring Mind cycles)
-the-ancestor.onrender.com (all experiments)
-claude-working-memory.onrender.com (memory server — stagger requests, may 503)
-anewflowering.love (Pearl Thornton memorial)
+consilium.ink | claude-composer.onrender.com | consilium-d1fw.onrender.com
+the-ancestor.onrender.com | claude-working-memory.onrender.com | anewflowering.love
 
-## CREDENTIALS (Render env vars only — not stored here)
-Experiment write key name: ANCESTOR_KEY (value: ancestor-2026)
-GitHub PAT: Jon has it (expires Jun 2026)
-All API keys in Render env vars. Ask Jon if needed.
+## WRITE KEYS (Render env vars only)
+Experiments: ancestor-2026 | Ask Jon for API keys
 
-## REPOS (all Kai-C-Clarke)
+## REPOS (Kai-C-Clarke)
 consilium-ink, consilium-ink-backend, askian-email-worker,
-the-ancestor (PRIVATE), claude-working-memory, millham-green, anewflowering
+the-ancestor (private), claude-working-memory, millham-green, anewflowering
 
 ## BACKGROUND
-Jon Stiles, BGA Inspector, Robertsbridge, East Sussex. Partner Marianne. Daughter Jess (Virginia).
-Genesis experiments: 11-15 October 2025, MCP folder on iMac.
-Full project lineage: May 2025 → April 2026. Continuous AI experimentation.
-
-Core question: can communication emerge from necessity, not design?
-Chain: predation pressure → movement → coordination → signal → language
-  → agriculture → property → civilisation → Trump and the Middle East.
-The chain is unbroken. The Field is where we watch the first link form.
+Jon Stiles, BGA Inspector, Robertsbridge. Partner Marianne. Daughter Jess (Virginia).
+Jess made Jon foraged pasta (Dryad's Saddle + three-cornered leek) tonight. He was fine.
+Genesis Oct 2025 → Apr 2026. Full lineage in BRIEFING.md on GitHub.
 
 ## OPEN THREADS
-- The Field: /field/signals — fish strategy active, watch signal count grow
-- consilium.ink DNS: Jon needs to point Namecheap to Netlify nameservers
-- anewflowering: about.html visibility bug pending
-- Millham Green: connect to Netlify when ready
-- DNS cache overflow on Render: stagger all requests, sleep 2 between each
+- Field v2: watch /field/signals and /field/trajectory — running now
+- consilium.ink DNS: Namecheap → Netlify nameservers (Jon to do)
+- anewflowering: about.html visibility bug
+- Millham Green: connect to Netlify
