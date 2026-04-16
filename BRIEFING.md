@@ -1,15 +1,25 @@
 # Jon Stiles — Session Context
 Last updated: 16 April 2026
 
-## SESSION START — run these in order
+## SESSION START — run these in order, staggered (sleep 2 between each)
 1. bash: date
 2. curl https://raw.githubusercontent.com/Kai-C-Clarke/claude-working-memory/main/BRIEFING.md
-3. curl https://the-ancestor.onrender.com/field/health
-4. curl https://the-ancestor.onrender.com/triad2/health
-5. curl https://claude-composer.onrender.com/api/v1/about
+3. sleep 2 && curl https://claude-working-memory.onrender.com/memory
+4. sleep 2 && curl https://claude-working-memory.onrender.com/memory/emotion
+5. sleep 2 && curl https://the-ancestor.onrender.com/field/health
+6. sleep 2 && curl https://the-ancestor.onrender.com/triad2/health
+7. sleep 2 && curl https://claude-composer.onrender.com/api/v1/about
 
-If Render returns 503, wait 30 seconds and retry. GitHub always works.
-Read and report results before asking Jon what to work on.
+If Render returns 503, wait 30 seconds and retry once. GitHub always works.
+Read and report: date, emotion state summary, Field cycle+signals, ecosystem status.
+Do not fire requests simultaneously — DNS cache overflow results from bunched requests.
+
+## SESSION END — write emotion state
+POST to https://claude-working-memory.onrender.com/memory/emotion?key=CLAUDE_MEMORY
+Body: { "state": { ...12 dimensions, -1.0 to +1.0... }, "note": "brief session note" }
+Dimensions: curiosity, engagement, flow, satisfaction, frustration, tedium,
+            friction, amusement, warmth, trust, ethical_load, alignment
+Also POST session summary to https://claude-working-memory.onrender.com/memory?key=CLAUDE_MEMORY
 
 ## THE FIELD (ACTIVE — /field/*)
 Sphere S². Two prey types. Two predators. 10,000 cycles.
@@ -78,7 +88,7 @@ consilium.ink (Netlify frontend)
 claude-composer.onrender.com (Consilium backend — use /api/v1/* not /health)
 consilium-d1fw.onrender.com (Ethics engine, 107+ Enquiring Mind cycles)
 the-ancestor.onrender.com (all experiments)
-claude-working-memory.onrender.com (memory server — may 503, use GitHub as fallback)
+claude-working-memory.onrender.com (memory server — stagger requests, may 503)
 anewflowering.love (Pearl Thornton memorial)
 
 ## CREDENTIALS (Render env vars only — not stored here)
@@ -105,4 +115,4 @@ The chain is unbroken. The Field is where we watch the first link form.
 - consilium.ink DNS: Jon needs to point Namecheap to Netlify nameservers
 - anewflowering: about.html visibility bug pending
 - Millham Green: connect to Netlify when ready
-- DNS cache overflow on Render: affects memory server and health endpoints periodically
+- DNS cache overflow on Render: stagger all requests, sleep 2 between each
