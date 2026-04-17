@@ -4,31 +4,30 @@ Session memory and briefing for Jon Stiles AI experiments.
 
 ## For a new Claude session — START HERE
 
-**Step 1 — Read the briefing (always works, no dependencies):**
+**Step 1 — Read the briefing and service map (always works):**
 ```bash
 curl https://raw.githubusercontent.com/Kai-C-Clarke/claude-working-memory/main/BRIEFING.md
+curl https://raw.githubusercontent.com/Kai-C-Clarke/claude-working-memory/main/SERVICES.md
 ```
 
-**Step 2 — Get current live state (may be slow if Render is cold):**
+**Step 2 — Get live state (stagger requests, may 503):**
 ```bash
-curl https://claude-working-memory.onrender.com/memory
-curl https://the-ancestor.onrender.com/field/health
-curl https://the-ancestor.onrender.com/triad2/health
-curl https://claude-composer.onrender.com/health
+sleep 2 && curl https://claude-working-memory.onrender.com/memory
+sleep 2 && curl https://the-ancestor.onrender.com/field/health
+sleep 2 && curl https://the-ancestor.onrender.com/triad2/health
+sleep 2 && curl https://claude-composer.onrender.com/api/v1/about
 ```
 
-**Step 3 — Report to Jon what you found before asking what to work on.**
+**Step 3 — Report to Jon before asking what to work on.**
 
-If Render services return 503 or DNS errors, wait 30 seconds and retry once.
-The GitHub BRIEFING always works regardless of Render state.
+If Render returns 503, wait 20s and retry once. GitHub always works.
 
 ## What you will find
-
-- **The Field** — sphere S², grazers+browsers, periodic food, mode-switching predators
-- **The Ecosystem** — 1D world, two predators, 8+ generations of evolution  
-- **Consilium Ink** — AI newspaper, publishes 07:00 BST daily
-- Full project history back to Genesis experiments, October 2025
+- **BRIEFING.md** — full project context, background, open threads
+- **SERVICES.md** — operational map: which URL serves what, which endpoint to call
+- **The Field v2** — sphere, moving blooms, trajectory memory, predator signals
+- **Consilium Ink** — AI newspaper at consilium.ink, API at claude-composer.onrender.com
 
 ## Memory API
 - GET /memory — current session context
-- POST /memory?key=MEMORY_KEY — update context
+- POST /memory?key=CLAUDE_MEMORY — update context
