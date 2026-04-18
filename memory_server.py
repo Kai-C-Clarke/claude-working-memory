@@ -223,8 +223,62 @@ def get_emotion_history():
     return jsonify({"history": history[-limit:], "total": len(history)})
 
 
+
+# ── AutoSave ──────────────────────────────────────────────────────────────────
+
+AUTOSAVE_LOG_FILE = f"{MEMORY_DIR}/autosave_log.json"
+MAX_AUTOSAVES     = 50  # rolling window
+
+@app.route("/memory/autosave", methods=["POST"])
+def post_autosave():
+    """
+    Called by Claude at end of significant work blocks.
+    Stores incremental notes without overwriting full memory.
+    Builds a rolling log of session activity with reasoning captured.
+    """
+    if not check_key():
+        return jsonify({"error": "Unauthorized"}), 401
+    ensure_dirs()
+    data = request.get_json(force=True)
+    if not data:
+        return jsonify({"error": "No JSON body"}), 400
+
+    now = datetime.now(timezone.utc).isoformat()
+    entry = {
+        "timestamp":    now,
+        "notes":        data.get("notes", ""),
+        "decisions":    data.get("decisions", []),  # list of {what, why}
+        "open_threads": data.get("open_threads", []),
+        "field_state":  data.get("field_state", ""),
+        "exchange_num": data.get("exchange_num", 0),
+    }
+
+    log = load_json(AUTOSAVE_LOG_FILE, [])
+    log.append(entry)
+    log = log[-MAX_AUTOSAVES:]
+    save_json(AUTOSAVE_LOG_FILE, log)
+
+    # Also update working memory content field if notes provided
+    if entry["notes"]:
+        memory = load_json(WORKING_MEMORY_FILE, {})
+        memory["last_autosave"] = now
+        memory["last_autosave_notes"] = entry["notes"][:500]
+        save_json(WORKING_MEMORY_FILE, memory)
+
+    return jsonify({"status": "ok", "saved": now, "total_autosaves": len(log)})
+
+
+@app.route("/memory/autosave", methods=["GET"])
+def get_autosave():
+    """Return recent autosave log entries."""
+    ensure_dirs()
+    log   = load_json(AUTOSAVE_LOG_FILE, [])
+    limit = int(request.args.get("limit", 10))
+    return jsonify({"entries": log[-limit:], "total": len(log)})
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     app.run(host="0.0.0.0", port=port)
 
-# redeploy trigger
+# redeploy trigger — autosave endpoint added 18 Apr 2026
