@@ -10,6 +10,44 @@ Last updated: 18 April 2026 07:30 UTC
 6. `sleep 2 && curl https://the-ancestor.onrender.com/triad2/health`
 GitHub always works. Stagger Render requests — do not fire simultaneously.
 Read everything. Report date, Field cycle+signals+traj_hits, Consilium edition.
+---
+
+## HOW TO UPDATE THIS BRIEFING (read this before ending any session)
+
+At the end of every significant session, update BRIEFING.md on GitHub.
+Use the GitHub API — fetch current SHA, then PUT with new content.
+
+**Write like a colleague handing over to another colleague — not like release notes.**
+
+Bad update: "Fixed kill radius to 0.12"
+Good update: "Kill radius was 0.05 — too small. Predator switched to hunt at 0.25
+radians but could only kill at 0.05. By the time it closed the distance the prey
+had fled. Fixed to 0.12 so the commit point and kill point are close together."
+
+**Always capture:**
+- WHY a decision was made, not just what was decided
+- The reasoning behind architectural choices
+- Jon's editorial/philosophical positions when they shaped a decision
+- What was tried that didn't work and why
+- The current state of any experiment including what the numbers mean
+- Any open questions or unresolved tensions
+
+**Always update:**
+- The "Open Threads" section with current status
+- The experiment state with latest cycle/signals/kills
+- Any new feeds, features, or services added
+- The date at the top
+
+**Never summarise away the reasoning.** The facts are recoverable from code and
+endpoints. The reasoning is only in the conversation. That's what gets lost.
+
+Jon's explicit instruction: "I don't understand why our Claude memory isn't
+capturing everything." The answer is that previous updates captured facts not
+understanding. This BRIEFING should read like a thorough handover note, not a
+changelog.
+
+---
+
 
 ---
 
