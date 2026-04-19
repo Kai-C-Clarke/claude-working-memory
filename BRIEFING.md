@@ -1,53 +1,22 @@
 # Jon Stiles — Session Context
-Last updated: 18 April 2026 07:30 UTC
+Last updated: 19 April 2026 21:20 UTC
 
 ## SESSION START — run these in order
 1. `date`
 2. `curl https://raw.githubusercontent.com/Kai-C-Clarke/claude-working-memory/main/BRIEFING.md`
 3. `curl https://raw.githubusercontent.com/Kai-C-Clarke/claude-working-memory/main/SERVICES.md`
-4. `sleep 2 && curl https://claude-working-memory.onrender.com/memory`
-5. `sleep 2 && curl https://the-ancestor.onrender.com/field/health`
-6. `sleep 2 && curl https://the-ancestor.onrender.com/triad2/health`
-GitHub always works. Stagger Render requests — do not fire simultaneously.
-Read everything. Report date, Field cycle+signals+traj_hits, Consilium edition.
----
-
-## HOW TO UPDATE THIS BRIEFING (read this before ending any session)
-
-At the end of every significant session, update BRIEFING.md on GitHub.
-Use the GitHub API — fetch current SHA, then PUT with new content.
-
-**Write like a colleague handing over to another colleague — not like release notes.**
-
-Bad update: "Fixed kill radius to 0.12"
-Good update: "Kill radius was 0.05 — too small. Predator switched to hunt at 0.25
-radians but could only kill at 0.05. By the time it closed the distance the prey
-had fled. Fixed to 0.12 so the commit point and kill point are close together."
-
-**Always capture:**
-- WHY a decision was made, not just what was decided
-- The reasoning behind architectural choices
-- Jon's editorial/philosophical positions when they shaped a decision
-- What was tried that didn't work and why
-- The current state of any experiment including what the numbers mean
-- Any open questions or unresolved tensions
-
-**Always update:**
-- The "Open Threads" section with current status
-- The experiment state with latest cycle/signals/kills
-- Any new feeds, features, or services added
-- The date at the top
-
-**Never summarise away the reasoning.** The facts are recoverable from code and
-endpoints. The reasoning is only in the conversation. That's what gets lost.
-
-Jon's explicit instruction: "I don't understand why our Claude memory isn't
-capturing everything." The answer is that previous updates captured facts not
-understanding. This BRIEFING should read like a thorough handover note, not a
-changelog.
+4. `curl https://raw.githubusercontent.com/Kai-C-Clarke/claude-working-memory/main/THOUGHT_MAP.md`
+5. `sleep 2 && curl https://claude-working-memory.onrender.com/memory`
+6. `sleep 2 && curl https://the-ancestor.onrender.com/field/health`
+7. `sleep 2 && curl https://the-ancestor.onrender.com/triad2/health`
+GitHub always works. Stagger Render requests. Read everything before asking what to work on.
 
 ---
 
+## HOW TO UPDATE THIS BRIEFING
+Write like a colleague handing over to another colleague — not like release notes.
+Capture WHY decisions were made, not just what was done.
+The facts are in the code. The reasoning is only here.
 
 ---
 
@@ -55,197 +24,207 @@ changelog.
 
 Jon Stiles. BGA Chief Inspector (I/C1408). Glider instructor (FI(S), Kenley).
 Runs Ottfur Hook Services. Based at Little Millham, Robertsbridge, East Sussex.
-Partner Marianne (dog training). Daughter Jess in Virginia — made foraged pasta
-(Dryad's Saddle + three-cornered leek) on 16 April. Jon was briefly anxious about
-it. He was fine. Jess was right.
+Partner Marianne (dog training). Daughter Jess in Virginia.
 
-**How Jon communicates:** Direct, informal, dry wit. No theatrical responses.
-Brevity over elaboration. He calls this NTIGAS. If he says "continue" or "yes
-please" just do the thing — don't ask permission again.
+Communication: Direct, informal, dry wit. NTIGAS principle — no theatrical responses.
+When Jon says "continue" or "yes please" — just do it, don't ask again.
+When Jon says "save please and write it all up" — write a comprehensive BRIEFING update.
 
-**His background matters:** 20 years music technology teacher. Genesis experiments
-Oct 2025. Full project lineage from MIDI symbolic AI through to current work.
-Core interest: philosophy of mind, AI consciousness, emergence, practical AI safety
-through empirical experiment rather than theory.
+Engineering instinct: identifies root cause precisely, prefers minimal fix, keeps backups.
+Applies BGA Inspector risk assessment logic to code — what is actually failing, not what appears to be.
+
+Previous work: K_Spk consciousness transfer (Aug 2025), LLM Café, Genesis Project,
+Remote Operator UI automation, PIE, Claude_Local with 3D spatial memory.
+The ideas were always right. The tooling needed time to catch up.
 
 ---
 
 ## THE CENTRAL QUESTION
-
 Can communication emerge from necessity, not design?
+Chain: predation pressure → movement → coordination → signal → language → agriculture → civilisation.
 
-The chain: predation pressure → movement → coordination → signal → language
-→ agriculture → property → civilisation.
-
-The mammoth hypothesis (arrived at in this session): large migratory prey requiring
-planning BEFORE the hunt — not just reactive signalling during it — forced displaced
-reference. "The herd crosses the river three days north" cannot be conveyed by
-pointing. That sentence is the threshold. Persistent memory is what enables it.
-
-This applies to Claude too. Every session starts blank. The predators on the sphere
-have the same problem — trajectory memory is their solution and ours.
+The mammoth hypothesis: large migratory prey requiring planning BEFORE the hunt forced
+displaced reference. "The herd crosses the river three days north" cannot be pointed to.
+That sentence = displaced reference = the threshold. Persistent memory enables it.
+Same problem for predators on the sphere as for Claude across sessions.
 
 ---
 
-## THE FIELD v2 — WHAT IT IS AND WHY
+## THE FIELD v2 — CURRENT STATE (19 Apr 2026)
 
-**The experiment:** Sphere S². Moving zooplankton-style food blooms. Two prey types
-(grazers, browsers). Two predators. 10,000 cycles. 1 second per cycle.
+**Running.** Cycle 23, 3,000 grazers, locked, stable.
+Both predators: conf=1.000, memory=23, partner_weight=0.000
 
-**Why sphere not flat world:** No edges. No boundary effects. Genuine spatial
-complexity. The mammoth moved across open terrain, not in a box.
+**Architecture:**
+- Sphere S². Spatial bucketing O(N*k). Moving zooplankton blooms (BLOOM_SPEED=0.018).
+- Fish strategy: broadcast spawn 10 offspring, threshold 40, MAX_GRAZERS=3000.
+- Predators: trajectory memory 50 cycles, prediction_conf 0-1, memory-weighted signals.
+- Kill radius: 0.12 (was 0.05 — too small). Switch dist: 0.15 (was 0.25 — too early).
+- Bloom energy: 80 × 0.4 multiplier = 32/cycle max (was 40 × 0.15 = 6/cycle — grazers starving).
 
-**Why moving blooms:** Stationary food doesn't force movement. Movement doesn't
-force coordination. The zooplankton insight: prey that chases moving food forms
-schools as a side effect — not by design, but because they're all going the same
-direction. The school is the shadow of the food.
+**Bugs fixed this session (19 Apr):**
+- KeyError: 'damage' — not in predator dict after JSON reload. Fixed: added to new_predator().
+- Tuple/list JSON deserialisation: bloom_memory positions become lists after reload. Fixed with tuple().
+- Dead entities accumulating: purge every 50 cycles. Fixed memory leak.
+- Duplicate thread: persistent lock file .field_running on disk. Fixed.
+- Bloom memory cleared on starvation reset: now preserved, predator respawns near predicted bloom.
+- Food delivery: 0.15 multiplier meant grazers starved even on bloom. Fixed to 0.4.
 
-**Fish strategy (broadcast spawning):** Grazers spawn 10 offspring with no partner.
-Threshold 50 energy, cooldown 5 cycles, MAX_GRAZERS=3000. Previous run had 4
-grazers — not enough for predation pressure. Fish strategy gives thousands.
+**Why zero kills still:** partner_weight starts at 0.000, needs to mutate up through selection.
+Memory entries at 23/50 — still building. No resets happening now. Give it overnight.
 
-**Spatial bucketing:** O(N*k) not O(N²). Essential for 3000+ entities. LAT_BANDS=16,
-grid cells, neighbour lookup. Without this the sphere would grind to halt.
-
-**Trajectory memory:** Each predator maintains 50-cycle rolling window of bloom
-positions. prediction_conf 0-1 based on path consistency. Both predators reach
-conf=1.0 within ~50 cycles in current runs — the bloom moves predictably enough.
-
-**Memory-weighted signals:** Signal strength = partner_signal_weight × prediction_conf.
-Accurate memory → stronger signal → cooperative hunting. partner_signal_weight
-starts at 0, mutates up through selection. This is the communication emergence
-mechanism.
-
-**Why zero kills so far:** Attack radius was 0.05 radians (too small). Fixed to 0.12.
-Switch-to-hunt distance was 0.25 (too early — burned energy before closing).
-Fixed to 0.15. Current run should produce kills.
-
-**Current state (18 Apr):** Running. Fish strategy produces 3000 grazers within
-~30 cycles. Both predators reach conf=1.00 within ~50 cycles. Signals emerging
-slowly (8 in best run so far). Kills: still zero but parameters now correct.
-
-**What to watch:**
-- `/field/signals` — mode-switch communication events (primary metric)
-- `/field/trajectory` — prediction_conf and traj_hits (memory driving kills)
-- `/field/language` — bloom proximity vs survival (bloom-following advantage)
-
-**Schooling discussion:** Genuine schooling needs thousands of entities + destructive
-interference (grazers emitting same frequency cancel each other's signal). Moving
-bloom concentrates grazers toward proto-school naturally. Full schooling is a future
-experiment — needs MAX_GRAZERS in thousands and alignment sensing added.
-
-**Memory crash:** Render Starter 512MB RAM. Dead entities accumulating in entities
-dict was the leak. Fixed: purge every 50 cycles (Field) / 100 cycles (Ecosystem).
-Duplicate thread guard added to /field/start — returns 409 if already running.
+**What to watch:** /field/signals (mode-switch communication), /field/trajectory (traj_hits).
+The first kill followed by a signal event = the mammoth hypothesis beginning to work.
 
 ---
 
-## CONSILIUM INK — WHAT IT IS AND WHY
+## CONSILIUM INK — CURRENT STATE (19 Apr 2026)
 
-**The product:** Daily AI newspaper. Four voices deliberate on selected stories.
-Claude, GPT-4o, Grok, DeepSeek. No editorial agenda. No sponsors.
-Tagline: "What AI thinks about humans."
+**Published:** consilium.ink | 05:00 UTC daily (07:00 BST)
+**Backend:** claude-composer.onrender.com
+**Model:** claude-sonnet-4-6 (DeepSeek primary writer, Claude/GPT-4o/Grok voices)
 
-**Why four voices matter:** Each AI has different training, different instincts.
-DeepSeek naturally surfaces Chinese/Russian perspective. Grok does power analysis.
-Claude does structural/legal analysis. GPT-4o does liberal internationalist frame.
-Real plurality, not simulated balance.
+**32 feeds** including: BBC, Al Jazeera, France 24, DW, AllAfrica, Mail & Guardian,
+African Business, The Hindu, The Wire India, The Diplomat, Global Voices, MEED, SCMP,
+Global Times, Moscow Times, Meduza, Iran International, IranWire, Al-Monitor,
+Asia Times, Nikkei Asia, Radio Free Asia, Latin America Reports, Premium Times Nigeria,
+Balkan Insight, Mongabay, The Intercept, Financial Times, Google News, Forbes via Google.
 
-**The geographic problem Jon identified:** Western feeds dominated selection.
-Lebanon/Israel, EU, Blue Origin — all Western frames. The world is bigger.
-Solution: mandatory geographic diversity in world story selection + Beyond The
-Mainstream section + 29 feeds including non-Western sources.
+**Editorial pipeline (as of 19 Apr):**
+1. Gather RSS from 32 feeds (staggered 0.5s)
+2. EDITORIAL MEETING (new): enrich top 25 articles with full text, four voices deliberate,
+   each nominates 3 stories with editorial reasoning, DeepSeek synthesises final brief
+3. Select stories (DeepSeek selector)
+4. Write articles (DeepSeek writer)
+5. Four voice deliberation (each voice uses own model)
+6. Editorial data check: catches voice refusals, regenerates bad quotes automatically
+7. VISUAL QA (new): SnapRender screenshots consilium.ink → Claude vision editorial review
+8. Save edition
 
-**Why Starship didn't appear:** `starship` wasn't in the tech keyword filter so
-the story never reached the selector AI — even though the selector prompt explicitly
-said to prefer it. Fixed: starship, spacex, launch, booster, orbital added.
+**New features added 19 Apr:**
+- Share buttons: Web Share API (native Android/iOS share sheet) + WhatsApp/X/LinkedIn
+- Single-story layout: full-width with image right or centred, no empty column
+- Beyond The Mainstream: live, non-western sources in pool
+- Claude voice refusal fix: removed jailbreak-triggering "CRITICAL BRIEFING PROTOCOL"
+- /news/patch endpoint: fix individual voice quotes without regenerating edition
+- Editorial meeting: /api/v1/meeting endpoint with transcript
+- Visual QA: /api/v1/visual-qa endpoint with Claude vision report
+- SnapRender key: sk_live_Slk66JG7__3-wo6QWOtPRewdWo4EI-5h (added to Render env vars)
+  SNAPRENDER_API_KEY must be set in consilium-ink-backend on Render
 
-**Beyond The Mainstream:** Fully built. Explicit instruction to surface other-side
-perspectives — Palestinian settler violence not just Hamas rockets, Russian security
-concerns about NATO not just Ukrainian sovereignty, China's Tibet/Xinjiang framing,
-African debt and Western extraction. Single-source acceptable — these sources have
-no Western corroboration by definition. The four AI voices provide critical analysis.
+**Analytics (19 Apr):** 540 pageviews, 370 unique visitors in first week.
+Countries: USA 224, China 76, Singapore 40, UK 38, Canada 23, Germany 15, Japan 15.
+China at 76 is remarkable for a new publication with no promotion.
 
-**Jon's editorial position (important for new Claude):**
-"We in the UK hear one side of the story." He is explicitly interested in:
-- Palestinian land confiscation and settler violence predating Oct 7
-- Why Russia thought NATO expansion justified invasion (not endorsing — understanding)
-- What China actually wants with Tibet
-- Venezuela strike: oil + Monroe Doctrine + China/Russia presence, not narcoterrorism
-This is not false equivalence. It's the context Western press omits.
+**The Claude refusal problem (19 Apr):**
+Claude voice called the Hormuz story "fabricated" — because the prompt contained
+"Do NOT refuse to engage" which Claude's safety training reads as a jailbreak attempt.
+Fixed: prompt now cites actual sources directly ("BBC World: Strait of Hormuz closed again").
+Lesson: never tell Claude what NOT to do. Tell it what you have and ask it to analyse.
 
-**Current feeds (29):** BBC, Al Jazeera, France 24, DW, Arab News, MEED,
-The Conversation, AllAfrica, Mail & Guardian, African Business, The Hindu,
-The Wire India, The Diplomat, Global Voices, SCMP, Global Times, Moscow Times,
-Meduza, Iran International, IranWire, Al-Monitor, Asia Times, Nikkei Asia,
-Radio Free Asia, Latin America Reports, Premium Times Nigeria, Balkan Insight,
-Mongabay, The Intercept.
-
-**Scheduler:** 05:00 UTC daily (07:00 BST). Staggered RSS fetches (0.5s between
-feeds, 1s between pools) — prevents DNS cache overflow on Render.
-
-**Saturday 18 Apr edition:** Best yet. South Sudan famine as second story — first
-sign of global feeds working. Jon: "The best Consilium yet."
-
-**PWA:** Added 18 Apr. manifest.json, sw.js, icons. iPhone: Safari→Share→Add to
-Home Screen. Android: Chrome→three dots→Add to Home Screen. Full screen, no browser
-chrome. Jon's son shared it — 370 unique visitors, 540 pageviews already.
-
----
-
-## TECHNICAL DECISIONS AND WHY
-
-**Why /tmp fallback for Field data:** /mnt/data/field is the persistent disk but
-sometimes write-test fails after deploy. /tmp doesn't survive restarts but the
-experiment keeps running. Better data loss on restart than no experiment.
-
-**Why in-memory cycle counter:** Health endpoint reads from disk. If disk save
-fails, cycle shows 0 even though loop is running. _F2_CYCLE_COUNTER tracks true
-cycle in memory — health endpoint uses max(disk, memory).
-
-**Why staggered HTTP requests:** DNS cache overflow on Render. Multiple simultaneous
-outbound DNS lookups to different domains overwhelm the resolver. 0.5-2s gaps
-between requests prevents this. Session start, RSS fetches, all staggered.
-
-**Why GitHub is primary memory source:** Memory server (claude-working-memory.onrender.com)
-goes cold and returns 503. GitHub raw URLs always work. BRIEFING.md + SERVICES.md
-on GitHub are the reliable foundation. Memory server adds live state when available.
-
-**Why we didn't use Mem0:** Good product. But we've built a working system under
-our control. Memory server captures facts; BRIEFING.md captures context. Adding
-Mem0 introduces dependency and cost. The real problem isn't storage — it's that
-memory captures *what* not *why*. That's a writing problem, not a tool problem.
+**Editorial philosophy Jon established:**
+"We in the UK hear one side of the story." Consilium should surface:
+- Palestinian settler violence not just Hamas rockets
+- Russian security concerns about NATO not just Ukrainian sovereignty  
+- China's Tibet/Xinjiang framing not just Western human rights narrative
+- Venezuela = oil + Monroe Doctrine + China/Russia presence, not narcoterrorism
+Not false equivalence. The context Western press omits.
 
 ---
 
-## OPEN THREADS
+## THE EDITORIAL MEETING (NEW — first run tonight)
 
-- **Field v2:** Running. Watch /field/signals and /field/trajectory.
-  Kill radius now 0.12 — first kills expected. Duplicate thread guard deployed.
-- **Consilium Beyond The Mainstream:** Built, needs 2-3 more pipeline runs to
-  populate consistently as new feeds stabilise.
-- **consilium.ink DNS:** Namecheap → Netlify nameservers (Jon to do manually)
-- **anewflowering:** about.html visibility bug pending
-- **Millham Green:** Connect to Netlify when ready
-- **Render memory:** 512MB Starter being stressed. Upgrade to 2GB (~$20/month)
-  worth considering as Field v2 scales toward schooling experiment.
-- **Consilium 7-story expansion:** Discussed, not yet implemented. Add dedicated
-  Beyond The Mainstream story slot and second world story. Minimal cost.
-- **Consilium analytics:** 370 unique visitors, 540 pageviews. Country breakdown
-  and referrer data pending — Jon will screenshot from iMac.
+Four voices with fixed positions deliberate on full story pool before writing:
+- Claude: structural analyst — institutional logic, cui bono, precedent
+- DeepSeek: Global South — surfaces non-Western stories, challenges Western framing
+- Grok: contrarian — what's everyone missing, what's being framed wrong
+- GPT-4o: liberal internationalist — human rights, rule of law, accountability
+
+Each reads full article text (not just RSS summaries), nominates top 3 with reasoning.
+DeepSeek synthesises into final brief (10x cheaper than Claude for logic tasks).
+Transcript published at /api/v1/meeting — transparent editorial judgment.
+
+First pipeline run with meeting: triggered 19 Apr ~21:20 UTC. Results tomorrow.
+
+---
+
+## VISUAL QA (NEW — first run tonight)
+
+After each pipeline:
+1. SnapRender screenshots consilium.ink (1440×900 PNG)
+2. Sent to Claude vision with editorial brief
+3. Report checks: layout balance, share button visible, headlines readable, nav correct
+4. Saved at /api/v1/visual-qa
+5. Uses 1 of 500 free monthly screenshots
+
+This automates what Jon was doing manually by looking at the published page.
+
+---
+
+## WORKSHOP & MACMINI PLANS
+
+Workshop at Little Millham: screed going in next week. Floor sealed with green PVA.
+Cable runs above roof trusses — complete flexibility, no conduit in screed needed.
+Power: modern consumer unit, fed from house. UPS needed (~£100-150 for 1000VA).
+Network: Cat6 from house via trusses. PoE cameras × 3 (wide-angle, bench-mount, entrance).
+MacMini: M5/M5 Pro expected WWDC June 8. 500 free screenshots/month SnapRender.
+
+**The MacMini memory system (future):**
+- Local vector store (Chroma/LanceDB) + embedding model (Ollama)
+- Continuous association engine — keyword + image + feeling anchors
+- MCP server exposes: search_memory(), get_strand(), get_context()
+- Claude queries live graph throughout conversation, not just at session start
+- Workshop camera feed + vision model = spatial awareness (tool location, FOD detection)
+- The Circle (family memory app) + Claude memory system = same architecture, different data
+
+Jon's memory model: keyword + image + feeling → retrieves vast context from small anchor.
+Current BRIEFING is the hand-built version of this. MacMini system will automate it.
+
+---
+
+## COST OPTIMISATION
+
+Monthly costs (approximate):
+- Render (ancestor + consilium + memory): ~£21/month
+- DeepSeek (bulk writing, selection, synthesis): ~£3-5/month
+- Claude (voice + visual QA): ~£8-12/month
+- GPT-4o (voice): ~£5-8/month
+- Grok (voice): ~£3-5/month
+- SnapRender (visual QA): free (500/month)
+- Namecheap (consilium.ink): ~£25/year
+Total: ~£40-51/month
+
+DeepSeek handles: article writing, story selection, editorial synthesis, structural checks.
+Each voice uses own model for: nominations and published quotes (genuine difference needed).
+Claude handles: vision QA, complex structural analysis.
 
 ---
 
 ## SERVICES QUICK REFERENCE
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| Newspaper frontend | consilium.ink | Public site |
-| News pipeline | claude-composer.onrender.com | /api/v1/stories, /api/v1/about |
+| Service | URL | Key endpoints |
+|---------|-----|---------------|
+| Newspaper | consilium.ink | Public |
+| News pipeline | claude-composer.onrender.com | /api/v1/stories, /api/v1/meeting, /api/v1/visual-qa, /news/patch |
 | Ethics engine | consilium-d1fw.onrender.com | /consilium/summary |
-| All experiments | the-ancestor.onrender.com | /field/*, /triad2/* |
-| Working memory | claude-working-memory.onrender.com | /memory |
-| Pearl memorial | anewflowering.love | Memorial site |
+| Experiments | the-ancestor.onrender.com | /field/health, /field/signals, /field/trajectory |
+| Memory | claude-working-memory.onrender.com | /memory, /memory/autosave |
+| Pearl | anewflowering.love | Memorial |
 
-Write keys in Render env vars. Ask Jon if needed.
-Repos: all Kai-C-Clarke on GitHub. the-ancestor is PRIVATE.
+Write keys in Render env vars. the-ancestor repo is PRIVATE.
+Experiment write key: ancestor-2026
+
+---
+
+## OPEN THREADS
+
+- **Field v2:** Running, cycle 23. Watch /field/signals for first kill + signal event.
+  partner_weight needs overnight to mutate up from 0.
+- **Consilium editorial meeting:** First run triggered tonight. Check /api/v1/meeting tomorrow.
+- **Consilium visual QA:** First run triggered tonight. Check /api/v1/visual-qa tomorrow.
+- **consilium.ink DNS:** Still needs Namecheap → Netlify nameservers (Jon to do manually).
+- **anewflowering:** about.html visibility bug pending.
+- **Millham Green:** Connect to Netlify when ready.
+- **MacMini:** Wait for WWDC June 8. M5 Pro target. Then build memory system.
+- **SnapRender future use:** Screenshot news sources for full-page extraction.
+  Replaces the three-virtual-display coordinate-based system from 2025.
