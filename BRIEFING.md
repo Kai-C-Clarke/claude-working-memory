@@ -98,6 +98,22 @@ A ambushes from edge. This is a genuine behavioural strategy, not a parameter tw
 - Does B's kill rate increase as obs_weight rises? (That would be selection for inference)
 - Ambush strategy — do kills increase with A at bloom edge vs centre?
 
+### OOM fix (21 Apr, evening):
+Service hit 512MB RAM limit at 05:47 AM and crashed. Root cause: two unbounded lists.
+
+1. **`lineage` dict** — every birth appended an entry, never pruned.
+   At 218k+ births overnight = ~22MB lineage data loaded into memory every cycle.
+   Fix: capped at 500 most recent entries (commits d626ffc, 5d585d64).
+
+2. **`moments` file** — birth/death events written to disk indefinitely,
+   entire file loaded into memory each cycle.
+   At 218k births = 218k objects in RAM per cycle.
+   Fix: capped at 2,000 most recent entries (commit de03254f).
+
+The log file was already capped at 5,000 — same pattern applied to lineage and moments.
+Field restarted and running: Cycle 59, 3,000 grazers, 5 signals within first minute.
+Memory usage should now stay well under 512MB indefinitely.
+
 ---
 
 ## CONSILIUM INK — CURRENT STATE (21 Apr 2026)
