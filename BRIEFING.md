@@ -1,5 +1,5 @@
 # Jon Stiles — Session Context
-Last updated: 21 April 2026 07:30 UTC
+Last updated: 25 April 2026 08:30 UTC
 
 ## SESSION START — run these in order
 1. `date`
@@ -31,90 +31,57 @@ Persistent memory enables it. Same problem for predators on the sphere as for Cl
 
 ---
 
-## THE FIELD — CURRENT STATE (21 Apr 2026)
+## THE FIELD — CURRENT STATE (25 Apr 2026)
 
-**Running:** Cycle 5,520 | G=3,000 | Kills=185 | Signals=200 | Traj=39 | Locked=True
+**Running:** the-ancestor.onrender.com | service: origin-experiment-v2
+**Endpoints:** /field/health | /field/bm | /field/summary | /field/hunters
 
-**This is a two-Claude collaboration.** This Claude (chat) handles debugging and infrastructure.
-Project Claude (claude.ai/projects) handles architectural thinking and experimental design.
-Project Claude identified the core flaw in v2 (telepathy) and drove the v3 rewrite.
+### The experiment question
+"Does entity A modify the behaviour of entity B, and by what means?"
 
-### Architecture evolution
+### Architecture — v2 (complete rewrite, 23-24 Apr 2026)
+All previous versions (spatial inference, telepathy, obs_weight) have been RETIRED.
+The current experiment starts from first principles.
 
-**v2 (original — "telepathy"):**
-B watched A's mode field flip search→hunt, then read A's predicted_bloom position directly.
-Not communication — direct state read. Partner_weight = sensitivity to a designed signal.
-Result: zero signals for thousands of cycles.
+**Core rules:**
+- No move_toward() — ever
+- No hunt radius — feeding is contact only (radius 1.2 grid cells)
+- Energy is conserved throughout (pool starts at 200,000)
+- Nothing is given that physics would not give
 
-**v3 (Project Claude's rewrite, 20 Apr — "spatial inference"):**
-B removed from A's internal state entirely. B only observes A's position history (20-cycle window).
-B measures A's recent vs previous displacement, detects acceleration >1.8× baseline.
-If sustained acceleration detected, B extrapolates A's trajectory and moves toward inferred destination.
-The only channel is spatial behaviour in a shared field.
-Result: 200 signals at cycle 5,520. 185 kills. Architecture correct.
+**The stack (bottom up):**
+1. Planetary field — 8 hotspots drifting slowly across 60×60 grid
+2. Blooms — form at hotspots, emit radial fields, leave residue on death (marine snow)
+3. Grazers — pure Brownian motion + chemokinesis (field boosts agitation, not direction)
+4. Hunters — same Brownian motion, emit field modulated by energy state (metabolism leaking into field)
 
-### Project Claude's subsequent refinements (20 Apr, 14 commits):
+**Key insight:** Hunter emission is modulated by proximity to prey — a well-fed hunter
+emits differently from a hungry one. Nobody designed this as a signal.
+It is simply metabolism leaking into the field.
 
-**1. Bloom-blind B (cba2f4d, 17:05)**
-B's memory_len set to 0 — cannot accumulate bloom trajectory memory at all.
-B must navigate entirely via inference from A's movement.
-This makes B's survival genuinely dependent on reading A.
-Fix: mem[-0:] bug (93e0f5fd) — memory_len=0 now truly prevents accumulation.
+**Somatic mutation:** Every entity has 0.0002 probability per cycle of random genome change.
+Mostly harmful. Occasionally produces novelty.
 
-**2. Identity frequency + duty cycle (80b0e7e, 20:03)**
-Each predator has a stable carrier frequency (id_freq) in band 1.4–1.8 Hz,
-above all natural prey frequencies. Pulse duration (emit_duty) is a second identity dimension.
-Together these constitute a persistent signature. Mode-switching modulates amplitude and speed,
-NOT the base frequency. This lets B distinguish "A moving fast" from "random entity moving fast."
-Exposed via id_freq and emit_duty in state endpoint.
+**BM measurement:** Compares hunters receiving strong field signals vs hunters not receiving signals.
+Did the signal group move closer to grazers than the no-signal group?
+Positive = yes. Sustained positive trend = something is happening.
 
-**3. Directional consistency trigger (1174a3af, 16:54)**
-Replaced acceleration-only trigger with directional consistency + straight-line detection.
-B now looks for A moving in a consistent direction, not just moving fast.
-More robust — eliminates false positives from random fast movement.
+### Current status (25 Apr morning)
+- Cycle ~228,000 | Generation ~2,249
+- 1.03 billion signals processed
+- bm_recent: 0.0 (sparse measurement — needs both signal AND food proximity simultaneously)
+- bm_trend: 0.0 (flat)
+- Ecosystem stable: ~300 hunters, ~140 grazers, ~10 blooms
 
-**4. Inference reinforcement (038642d2, 16:49)**
-partner_obs_weight starts at 0.15 (not 0.0) — B begins with some observation sensitivity.
-When B acts on inference AND that cycle produces a kill, obs_weight reinforced upward.
-When B ignores inference, obs_weight decays. Selection pressure on observation behaviour.
+### What to watch
+- bm_recent spikes (saw +1.27 at cycle 9,700-9,900 before settling)
+- Whether positive spikes strengthen over generations
+- bm_trend turning consistently positive
 
-**5. Ambush strategy for A (437ef5a9, 21:36)**
-A positions at bloom EDGE (BLOOM_RADIUS × 2), not centre.
-Problem: grazers have flee radius 0.35 rad — if A is at bloom centre,
-grazers detect A and avoid the bloom entirely. No prey comes to A.
-Solution: A waits outside flee detection zone. Grazers approach bloom to feed.
-A ambushes from edge. This is a genuine behavioural strategy, not a parameter tweak.
-
-**6. Fixes:**
-- None-comparison TypeError on stale state (9ae9c3cd)
-- Double distance decay bug (daee35ef)
-- Teleport spike filter
-- Signal threshold lowered to match observed speeds
-- A action threshold lowered to 0.03 (kin-gated)
-
-### What to watch:
-- `/field/signals` — are signals correlating with subsequent kills?
-- `obs_weight` — is B's observation sensitivity evolving upward?
-- Does B's kill rate increase as obs_weight rises? (That would be selection for inference)
-- Ambush strategy — do kills increase with A at bloom edge vs centre?
-
-### OOM fix (21 Apr, evening):
-Service hit 512MB RAM limit at 05:47 AM and crashed. Root cause: two unbounded lists.
-
-1. **`lineage` dict** — every birth appended an entry, never pruned.
-   At 218k+ births overnight = ~22MB lineage data loaded into memory every cycle.
-   Fix: capped at 500 most recent entries (commits d626ffc, 5d585d64).
-
-2. **`moments` file** — birth/death events written to disk indefinitely,
-   entire file loaded into memory each cycle.
-   At 218k births = 218k objects in RAM per cycle.
-   Fix: capped at 2,000 most recent entries (commit de03254f).
-
-The log file was already capped at 5,000 — same pattern applied to lineage and moments.
-Field restarted and running: Cycle 59, 3,000 grazers, 5 signals within first minute.
-Memory usage should now stay well under 512MB indefinitely.
-
----
+### Technical note
+Service runs as: python ancestor.py (NOT gunicorn — gunicorn starved the simulation thread)
+Start command set directly in Render dashboard, not via render.yaml.
+Render ignores render.yaml startCommand and auto-detects Python → gunicorn.
 
 ## CONSILIUM INK — CURRENT STATE (21 Apr 2026)
 
@@ -179,7 +146,7 @@ China at 76 remarkable for week 1 with no promotion.
 | Newspaper | consilium.ink | Netlify |
 | News backend | claude-composer.onrender.com | /news/state, /news/patch, /api/v1/meeting, /api/v1/visual-qa |
 | Ethics engine | consilium-d1fw.onrender.com | /consilium/summary |
-| Field experiments | the-ancestor.onrender.com | /field/health, /field/signals, /field/trajectory |
+| Field experiments | the-ancestor.onrender.com | /field/health, /field/bm, /field/summary, /field/hunters |
 | Memory | claude-working-memory.onrender.com | /memory, /memory/autosave |
 | Pearl | anewflowering.love | Memorial |
 
@@ -193,9 +160,9 @@ SnapRender: sk_live_[REDACTED] (add to Render env as SNAPRENDER_API_KEY)
 
 ## OPEN THREADS
 
-- **Field:** obs_weight not yet evolving — watch whether B's kills increase as inference matures
-- **Field:** Ambush strategy just deployed — does kill rate improve?
-- **Field:** First genuine signal→kill correlation would confirm the mammoth hypothesis
+- **Field v2:** bm oscillating around zero — watch for sustained positive trend over generations
+- **Field v2:** Update field.html on consilium.ink with v2 description and live bm chart
+- **Field v2:** Consider arms race mechanic — blooms evolving emission suppression
 - **Consilium:** Share button on Android — now in nav bar, confirm visible
 - **Consilium:** Article share buttons in modal — check renderShare working
 - **consilium.ink DNS:** Namecheap → Netlify nameservers (Jon to do)
