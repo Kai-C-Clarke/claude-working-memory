@@ -357,3 +357,56 @@ This is arguably the most important open question in science.
 - thecast.chat / AskIan
 - Field experiment v2 (shelved but running, save/load protecting state)
 
+
+---
+
+## WORKSHOP — PHYSICAL DETAILS (27 Apr 2026)
+
+### Dimensions and layout
+- 12 metres x 4.5 metres
+- Concrete floor, white walls, exposed roof trusses
+- Natural light both sides
+- Big enough for individual wing panels and fuselage
+- Fold-up wall benches + wheeled tables (flexible layout — jobs vary)
+- No fixed areas — floor needs to clear for fuselage movement
+
+### Equipment planned
+- Pillar drill, belt sander, grinder with wire wheel
+- Dust extraction system on tools
+- Compressor outside in insulated ventilated box
+- Mac Mini in the HOUSE (too dusty in workshop when scarfing)
+- Small display + speaker in workshop connected via WiFi
+
+### Camera/assistant placement
+- Camera high on end wall — covers full working area
+- Microphone array central
+- Screen/speaker at bench height near door end
+- Shadow boards — dark outlines on white walls, camera reads missing tools
+
+### First jobs coming in
+1. **SHK-1 fuselage** — repair (Jon's own aircraft)
+2. **David's Slingsby Swallow (T.38)** — fabric re-cover
+   - Jon put knee through fuselage fabric
+   - Covered in Madapollam — very old and rotten
+   - Replacing with **Diatex 1500** (heavier weight chosen for
+     abrasion resistance — in/out of trailer regularly)
+   - Diatex 1500 compatible with traditional dope systems
+   - Needs more heat to shrink than 1000 but very stable once done
+   - Critical areas: trailing edges, former attachment, tail section
+
+### Container
+- SHK-1 Dutch trailer needs coat of paint before it rusts
+- To be done before workshop setup complete
+
+---
+
+## OPEN THREADS (updated 27 Apr evening)
+- Workshop: finish container paint job
+- Workshop: get Schleicher + Slingsby documentation into Claude Local
+- Workshop assistant: Swallow re-cover as first real test case for knowledge base
+- Mac Mini M5: watch WWDC June 8
+- Field experiment: running, shelved, save/load protecting state
+- Estate: HMRC SA900 call still pending
+- Consilium: read AI communication response tomorrow at /consilium/summary
+- Millham Green: conversation engine still priority when ready
+
