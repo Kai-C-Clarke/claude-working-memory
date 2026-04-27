@@ -221,3 +221,139 @@ If any condition fails, Silent Hunter wins.
   (Railway account deleted — The Circle runs locally only)
 - consilium.ink: field.html needs updating with v2 results
 
+
+---
+
+## PREBIOTIC CHEMISTRY SIMULATION — DESIGN NOTES
+
+### Concept
+Computational Miller-Urey experiment — simulate prebiotic nucleotide formation
+and spontaneous RNA-like chain assembly from first principles.
+
+### What we'd simulate
+Three nucleotide components in liquid medium:
+- Nitrogenous bases (adenine, uracil, guanine, cytosine)
+  — form spontaneously from HCN and ammonia
+- Ribose sugar — forms from formaldehyde via formose reaction  
+- Phosphate groups — abundant at volcanic/hydrothermal vents
+
+Environment:
+- Temperature gradients (hot vent, cold ocean)
+- pH gradients
+- Electric discharge (lightning, electrochemical gradients)
+- Mineral surfaces for concentration and scaffolding
+- Time — millions of cycles
+
+### What we'd watch for
+NOT a functional RNA molecule appearing fully formed. Instead:
+- Do components concentrate on mineral surfaces?
+- Do nucleotides spontaneously link into short chains?
+- Do any short chains catalyse their own extension?
+- Does selection on chain stability produce longer sequences?
+- Do chains modify their chemical environment in ways affecting other chains?
+  (molecular equivalent of field modulation — the bridge to communication)
+
+### Simulation architecture
+Not molecular dynamics (too compute-heavy). Chemical rule level:
+- Each entity is a molecule with properties: binding affinity, stability, reactivity
+- Rules govern interactions
+- Emergent complexity from rules, not simulated electrons
+- Similar spirit to field experiment but one level deeper
+
+### Timescale reality check
+Cannot simulate 800M years of realistic chemistry on consumer hardware.
+LEGITIMATE CHEAT: Run millions of independent chemistry experiments in parallel
+Not: one hydrothermal vent for 800M years
+But: 10M vents for 80 years of chemistry each, simultaneously
+M5 Pro 18 cores enables genuine parallelism
+
+Realistic target:
+- 1 cycle = 1 hour of chemistry
+- 18 parallel simulations
+- 800,000 cycles each = 91 simulated years of chemistry
+- At 500 cycles/second = ~27 minutes compute time
+- Miller-Urey showed results in a week — 91 years is generous
+
+### What we'd learn
+1. Which conditions are SUFFICIENT for spontaneous chain formation
+2. Whether autocatalysis is inevitable or rare (probability distribution)
+3. Where chemical selection shades into biological selection
+4. Whether field modulation emerges at molecular level without design
+5. Minimum complexity for heritability
+6. Unexpected emergent behaviours (the Silent Hunter equivalent)
+
+### The deepest question
+Is complexity INEVITABLE or ACCIDENTAL given energy and time?
+- Robust across wide parameter space = life is physics, not miracle
+- Only works in tiny parameter corner = Earth got extraordinarily lucky
+This is arguably the most important open question in science.
+
+---
+
+## MAC MINI MONSTER — JOB LIST
+
+### Hardware
+- M5 Pro Mac Mini (watch WWDC June 8 for announcement)
+- Base 1TB SSD
+- External Thunderbolt 5 SSD ~2-4TB (Samsung T9, ~£150) for working storage
+- Large spinning disk 4-8TB (~£80-100) for cold archive/glider documentation
+
+### Priority 1 — Workshop Assistant
+- [ ] Gather Schleicher AD/TN documentation (K13, Ka6E, Ka6CR, K8, Ka2b, SHK-1)
+      URLs: alexander-schleicher.de/en/tm-lta-wa/tm-flugzeuge/[type]-technische-mitteilungen/
+- [ ] Gather Slingsby documentation (T.38 Swallow, T.45 Olympia 463)
+      Sources: LAA, Slingsby Owners Club, EASA AD database
+- [ ] Gather DG-100G documentation
+      Source: dg-flugzeugbau.de
+- [ ] Connect to Jon's Google Drive (existing glider records)
+- [ ] Build JSON knowledge base from extracted AD data
+      Fields: AD number, date, applicability, inspection requirement, interval, compliance
+- [ ] Build voice interface (local Whisper model)
+- [ ] Build camera integration (tool tracking, progress photos)
+- [ ] Build observation recording → inspection report generation
+- [ ] Shadow board camera for tool tracking
+- [ ] Aircraft record system (per registration)
+
+### Priority 2 — Prebiotic Chemistry Simulation
+- [ ] Design molecular rule set (binding affinity, stability, reactivity)
+- [ ] Build gradient environment (temperature, pH, electric discharge)
+- [ ] Implement mineral surface scaffolding
+- [ ] Build parallel simulation runner (18 cores)
+- [ ] Define measurement metrics (chain length distribution, autocatalysis events)
+- [ ] Run parameter space exploration
+- [ ] Look for field modulation equivalent at molecular level
+
+### Priority 3 — Field Experiment v3 (Stage 1 from chemistry)
+- [ ] Redesign from Stage 1 — no entities, just chemistry
+- [ ] Self-replicating molecules as first emergence
+- [ ] Competition for building blocks before any metabolism
+- [ ] Membrane formation from fatty acid physics
+- [ ] Metabolism emerging from proto-cell chemistry
+- [ ] Movement and sensing crystallising from physics
+- [ ] DO NOT design the outcome
+
+### Priority 4 — Digital Preservation
+- [ ] Contact Aviation Heritage UK (aviationheritageuk.org)
+- [ ] Research 3D scanning options (iPhone LiDAR as starting point)
+- [ ] Pilot scan on one aircraft (Olympia 2b?)
+- [ ] Design documentation structure (geometry + materials + inspector knowledge)
+- [ ] Build archive database
+
+### Priority 5 — Claude Local Enhancement
+- [ ] Add DeepSeek + GPT-4o model selector
+- [ ] Fix autosave indicator (shows "undefined")
+- [ ] Voice input (Whisper integration)
+- [ ] Move to local inference when M5 Pro arrives
+
+### Priority 6 — AI Communication Research
+- [ ] Read Consilium response to "what would AI-designed communication look like"
+- [ ] Design experiment: can field modulation at molecular level carry information?
+- [ ] Bridge between prebiotic simulation and communication emergence question
+- [ ] Consider: shared mathematical space as communication medium
+
+### Background — always running
+- Consilium News pipeline
+- anewflowering.love / Pearl
+- thecast.chat / AskIan
+- Field experiment v2 (shelved but running, save/load protecting state)
+
